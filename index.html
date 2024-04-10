@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<style type="text/css">
+	body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+	</style>
+	<script type="text/javascript" src="//api.map.baidu.com/api?type=webgl&v=1.0&ak=fMHxc4wQbZAHa07iUWxGeyHzJSXtSbSW"></script>
+	<title>地图展示</title>
+</head>
+<body>
+	<div id="allmap"></div>
+</body>
+</html>
+<script type="text/javascript">
+
+	var zoomsize = 17;
+	var map = new BMapGL.Map("allmap");
+	var p0 =  new BMapGL.Point(113.673024,34.788013) // 创建Map实例 
+	map.centerAndZoom(p0, zoomsize);  // 初始化地图,设置中心点坐标和地图级别
+	map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+	map.setMapStyleV2({     
+  styleId: '0dce6484aeea7279b4198bf8ad8f865d'
+});
+
+	var p1 = new BMapGL.Point(113.673024,34.788013);
+    var p2 = new BMapGL.Point(113.677264,34.792495);
+	var walking = new BMapGL.WalkingRoute(map, {renderOptions:{map: map, autoViewport: true}});
+	walking.disableAutoViewport();
+
+	// 定义所有点
+
+	class My_Point 
+	{
+	constructor(x, y, name, text,dish) 
+	{
+		this.point = new BMapGL.Point(x,y);
+		this.name = name;
+		this.text = text;
+		this.dish = dish;
+	}
+	}
+
+	var points=[{x:113.678558, y:34.783696}, {x:113.675976, y:34.801641}, {x:113.668738, y:34.778317}, {x:113.675632, y:34.789556}, {x:113.698101, y:34.789488}, {x:113.66458, y:34.786205}, {x:113.693813, y:34.797913}, {x:113.678532, y:34.788023}, {x:113.626439, y:34.766275}, {x:113.69478, y:34.785762}, {x:113.673547, y:34.786651}, {x:113.664651, y:34.780307}, 
+{x:113.678871, y:34.787908}, {x:113.673725, y:34.774257}, {x:113.677692, y:34.786059}, {x:113.677959, y:34.786058}, {x:113.674885, y:34.780366}, {x:113.648947, y:34.725506}, {x:113.673763, y:34.780418}, {x:113.627533, y:34.762031}, {x:113.673774, y:34.780416}, 
+		{x:113.673103, y:34.780274}, {x:113.651036, y:34.788736}, {x:113.686076, y:34.790831}, 
+		{x:113.697997, y:34.811018}, {x:113.67447, y:34.789456}, {x:113.656597, y:34.800247}, 
+		{x:113.686974, y:34.791277}, {x:113.685864, y:34.789984}, {x:113.673896, y:34.789572}, 
+		{x:113.664928, y:34.784741}, {x:113.705903, y:34.7652}, {x:113.667836, y:34.777358}, 
+		{x:113.675496, y:34.780289}, {x:113.664098, y:34.739914}, {x:113.68288, y:34.789454}, 
+		{x:113.67191, y:34.800569}, {x:113.684741, y:34.785561}
+	]
+	var labels=[
+		"桃源食屋","桓小樂蹄花汤","农家地锅鸡（同乐路店）",
+		"御尚一品香叉骨炸鸡","嗨螺号螺蛳粉（丰产路店）","荣华北京烤鸭（东三街店）",
+		"刘源记羊肉鲜汤","金刚饸烙面鲜炒鸡","まる·缘居酒屋",
+		"麦克苏提烧烤","福满苑酒楼（郑州工学院宾馆）","上海恩记汤包",
+		"咱家牛肉丸","老张家洛阳牛肉汤（文化路）","程记私房菜",
+		"幺妹川菜馆","李四辈饣它汤","彼酷哩烤鱼",
+		"醉面","新疆四厂网红烤包子","麦当劳",
+		"延庆观炸鸡","西屋烩面","喜家德",
+		"半闲斋","谷婆婆八宝粥","龍園涮肉丰庆路店",
+		"米村拌饭","厚道寿喜烧国贸店","聚奎苑烩面专家",
+		"帖记全羊肉鲜汤馆东三街","东北饭莊","买买江新疆大盘鸡黄河南街店",
+		"姐弟俩土豆粉","老马家特色烧烤京广中路店","天赋牛自助烤肉",
+		"五味烧鸡凉菜（文化路店）","溢香苑瓦罐"
+	]
+
+	var texts = ["好吃便宜分量还足，适合宿舍团建，唯一真神！","汤很滋补，地瓜很好吃，烧白也是神中神",
+	"适合喝酒聚餐","无","最好吃的炸damn","点半份可以抖音团购","无","无","日料，有点贵；二次元很开心，有很多海报和景品手办",
+	"抖音或者大众点评上买几个40代50的卷会实惠些","团购性价比很高；人多了合适","无","无","无","无","无",
+	"好吃，豆粥口感浓稠而不黏，很神奇的口感。水煎包好吃，而且不贵，牛肉水煎包1.5一个。去吃的人很多。","无","一般",
+	"好吃量大管饱，主要是便宜","还行，现在没怡泉C+，麦当劳🐎没了","神中神","神中神","有点小贵但是超级好吃，感觉是郑州饺子天花板",
+	"便宜量大","无","肉多新鲜 量大","标准预制菜，不过米饭小菜还行","无","无","好吃，羊肉质量不错，小贵","吃过最好吃的东北菜","无","无",
+	"羊肉串一元一串60一斤，主要点羊肉串蔬菜饮料的话人均不到50肉吃爽","刚开业肉很不错，饮料水果也很不错，后来肉质有一定程度下降且腌制问题重",
+	"无","柴公鸡是真柴啊，其余的都是常规水平，香酥饼很不错"
+]
+
+	var dishes = ["干锅豆腐，红烧鸡蛋，水煮牛肉","烧白，糍粑","美团四人餐","无","无","无","无","无","海鲜乌冬面","无","无","无","无","无","无","无",
+"水煎包，甜豆粥","推荐黑金螺蛳粉","招牌的几个都好吃","烤羊肉串，烤包子","淘宝点套餐便宜点","鸡柳鸡翅","牛排煲","喜三鲜；点饺子就好了，别的就无视吧",
+"无","无","118 美团四人餐  三个男的吃到饱（都健身）","无","无","无","推荐涮羊肉","锅包肉强烈推荐","羊肉串烤包子不错，主食常规水平","土豆粉好吃，小熊梦洛西不错，基本上饮料都好喝",
+"羊肉串相关，素拼，炒面，其余花哨的烧烤菜品不推荐","肥牛羊肉龙利鱼","凉菜好吃便宜量大。还有河南特色蒸菜，妈妈的味道","无"
+]
+
+	var r_num = labels.length;
+	var points_array = [];
+
+	// 实例化Point
+	for(var a = 0;a<r_num;a++)
+	{
+		var xy = points[a];
+		var tmp_point = new My_Point(xy.x,xy.y,labels[a],texts[a],dishes[a]);
+		points_array.push(tmp_point);
+	}
+
+	//循环定义图标
+	for (var i = 0; i < r_num; i++) 
+	{
+	(function(index) {
+		var tmp = points_array[index]
+		var point = tmp.point;
+		var name = tmp.name;
+		var text = "名称："+tmp.name+"\n"+"描述："+tmp.text+"\n"+"推荐菜品："+tmp.dish;
+		// 生成标签内容
+		
+		var label = new BMapGL.Label(name)
+		var marker = new BMapGL.Marker(point);
+		marker.setLabel(label);
+		marker.addEventListener("click", function() {
+		walking.clearResults();
+		walking.search(p1, point);
+		alert(text);
+		});
+		map.addOverlay(marker);
+	})(i);
+	}
+
+	// 定义初始地点图标
+	var marker = new BMapGL.Marker(p0);
+	var label = new BMapGL.Label("北区东门");
+	marker.setLabel(label); // 添加地点名称
+	map.addOverlay(marker);
+
+	// 添加初始化的自定义控件
+	function Initmap()
+	{
+		this.defaultAnchor = BMAP_ANCHOR_TOP_RIGHT;
+		this.defaultOffset = new BMapGL.Size(10, 35)
+	}
+	// 继承Control类
+	Initmap.prototype = new BMapGL.Control();
+	Initmap.prototype.initialize = function(map)
+	{
+		// 创建dom元素
+		var div = document.createElement('div');
+		// 添加文字
+		div.appendChild(document.createTextNode('取消导航'));
+		// 设置样式
+		div.style.cursor = "pointer";
+		div.style.padding = "8px 13px";
+		div.style.margin = "20px 0px";
+		div.style.boxShadow = "0 2px 6px 0 rgba(27, 142, 236, 0.5)";
+		div.style.borderRadius = "5px";
+		div.style.backgroundColor = "white";
+
+		// 绑定事件
+		div.onclick = function (e)
+		{
+			walking.clearResults();
+		}
+		// 添加dom元素道地图中
+		map.getContainer().appendChild(div);
+		// 返回元素
+		return div;
+	}
+	// 创建控件元素
+	var myInitmap = new Initmap();
+	map.addControl(myInitmap);
+
+	// 添加取消路径的自定义控件
+	function Cancelroute()
+	{
+		this.defaultAnchor = BMAP_ANCHOR_TOP_RIGHT;
+		this.defaultOffset = new BMapGL.Size(10, -10)
+	}
+	// 继承Control类
+	Cancelroute.prototype = new BMapGL.Control();
+	Cancelroute.prototype.initialize = function(map)
+	{
+		// 创建dom元素
+		var div = document.createElement('div');
+		// 添加文字
+		div.appendChild(document.createTextNode('复位'));
+		// 设置样式
+		div.style.cursor = "pointer";
+		div.style.padding = "8px 13px";
+		div.style.margin = "20px 0px";
+		div.style.boxShadow = "0 2px 6px 0 rgba(27, 142, 236, 0.5)";
+		div.style.borderRadius = "5px";
+		div.style.backgroundColor = "white";
+
+		// 绑定事件
+		div.onclick = function (e)
+		{
+			map.centerAndZoom(p0, zoomsize);
+			walking.clearResults();
+		}
+		// 添加dom元素道地图中
+		map.getContainer().appendChild(div);
+		// 返回元素
+		return div;
+	}
+	// 创建控件元素
+	var mycancelroute = new Cancelroute();
+	map.addControl(mycancelroute);
+
+	// 添加取消路径的自定义控件
+	function Contactme()
+	{
+		this.defaultAnchor = BMAP_ANCHOR_TOP_RIGHT;
+		this.defaultOffset = new BMapGL.Size(10, 80)
+	}
+	// 继承Control类
+	Contactme.prototype = new BMapGL.Control();
+	Contactme.prototype.initialize = function(map)
+	{
+		// 创建dom元素
+		var div = document.createElement('div');
+		// 添加文字
+		div.appendChild(document.createTextNode('联系我'));
+		// 设置样式
+		div.style.cursor = "pointer";
+		div.style.padding = "8px 13px";
+		div.style.margin = "20px 0px";
+		div.style.boxShadow = "0 2px 6px 0 rgba(27, 142, 236, 0.5)";
+		div.style.borderRadius = "5px";
+		div.style.backgroundColor = "white";
+
+		// 绑定事件
+		div.onclick = function (e)
+		{
+			alert("QQ:1029476272\n北区漫游指南：http://985.so/98zt9 (短链接，放心访问)\n你可以通过访问上面的网址进行文档的修改\n如果你有别的想法，可以联系我\n本网站由c0ld1nk制作")
+		}
+		// 添加dom元素道地图中
+		map.getContainer().appendChild(div);
+		// 返回元素
+		return div;
+	}
+	// 创建控件元素
+	var myContactme = new Contactme();
+	map.addControl(myContactme);
+
+	function Herf()
+	{
+		this.defaultAnchor = BMAP_ANCHOR_TOP_RIGHT;
+		this.defaultOffset = new BMapGL.Size(10, 125)
+	}
+	// 继承Control类
+	Herf.prototype = new BMapGL.Control();
+	Herf.prototype.initialize = function(map)
+	{
+		// 创建dom元素
+		var div = document.createElement('div');
+		// 添加文字
+		div.appendChild(document.createTextNode('前往文档'));
+		// 设置样式
+		div.style.cursor = "pointer";
+		div.style.padding = "8px 13px";
+		div.style.margin = "20px 0px";
+		div.style.boxShadow = "0 2px 6px 0 rgba(27, 142, 236, 0.5)";
+		div.style.borderRadius = "5px";
+		div.style.backgroundColor = "white";
+
+		// 绑定事件
+		div.onclick = function (e)
+		{
+			window.open("https://docs.qq.com/sheet/DS0tSRUdiT2NycVpH?u=f8b463dedf4b475fa93016d784246c1b&tab=BB08J2", "_blank");
+		}
+		// 添加dom元素道地图中
+		map.getContainer().appendChild(div);
+		// 返回元素
+		return div;
+	}
+	// 创建控件元素
+	var myHerf = new Herf();
+	map.addControl(myHerf);
+
+</script>
